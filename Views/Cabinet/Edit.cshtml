@@ -1,0 +1,42 @@
+﻿@model StudentEditModel
+
+@{
+    ViewData["Title"] = "Редактирование профиля";
+}
+
+<div class="card p-4 mx-auto my-5" style="max-width: 600px;">
+    <h2 class="text-center mb-4">Редактирование профиля</h2>
+
+    <form method="post" asp-controller="Cabinet" asp-action="Edit">
+        
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label">ФИО студента</label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="GroupName" class="form-label">Группа</label>
+            <input asp-for="GroupName" class="form-control" />
+            <span asp-validation-for="GroupName" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="PhotoUrl" class="form-label">Ссылка на фото (URL)</label>
+            <input asp-for="PhotoUrl" class="form-control" />
+            <span asp-validation-for="PhotoUrl" class="text-danger small"></span>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

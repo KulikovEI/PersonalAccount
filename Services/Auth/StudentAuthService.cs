@@ -10,6 +10,11 @@ namespace PersonalAccount.Services.Auth
     public class StudentAuthService(IStudentRepo<StudentAuthModel> students, IPasswordHasher<StudentAuthModel> hasher)
         : IStudentAuthService
     {
+        public async Task<StudentModel?> GetByIdAsync(int id)
+        {
+            return await students.GetByIdAsync(id);
+        }
+
         public async Task<StudentModel?> ValidateStudentAsync(string email, string password)
         {
             var student = await students.GetByEmailAsync(email);
@@ -35,5 +40,10 @@ namespace PersonalAccount.Services.Auth
         }
 
         public async Task SignOutAsync(HttpContext ctx) => await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        public async Task UpdateByIdAsync(int id, StudentModel student)
+        {
+            await students.UpdateByIdAsync(id, student);
+        }
     }
 }

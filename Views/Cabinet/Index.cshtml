@@ -1,9 +1,32 @@
 ﻿@model StudentModel
 
-<h1>Личный кабинет</h1>
-<p>ID: @Model.Id</p>
-<p>Email: @Model.Email</p>
-<p>Full Name: @Model.FullName</p>
-<p>Group Name: @Model.GroupName</p>
-<p>Photo</p>
-<img src="@Model.PhotoUrl" alt="@Model.FullName"/>
+<<div class="card p-4 mx-auto my-5" style="max-width: 600px;">
+    <h2 class="text-center mb-4">Личный кабинет</h2>
+
+    <div class="text-center mb-4">
+        <img src="@Model.PhotoUrl" 
+             alt="@Model.FullName" 
+             class="rounded-circle img-thumbnail" 
+             style="width: 120px; height: 120px; object-fit: cover;" />
+    </div>
+
+    <div class="mb-3">
+        <strong>ФИО:</strong> <span>@Model.FullName</span>
+    </div>
+
+    <div class="mb-3">
+        <strong>Группа:</strong> <span>@Model.GroupName</span>
+    </div>
+
+    <div class="mb-4">
+        <strong>Email:</strong> <span>@Model.Email</span>
+    </div>
+
+    <div class="text-center">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">На главную</a>
+    </div>
+
+    <form method="get" asp-controller="Cabinet" asp-action="Edit">
+        <button type="submit" class="btn btn-warning">Редактировать</button>
+    </form>
+</div>
