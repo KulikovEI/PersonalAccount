@@ -10,7 +10,7 @@ using PersonalAccount.ViewModels;
 namespace PersonalAccount.Controllers;
 
 [Authorize]
-public class CabinetController(IStudentCabinetService cabinet, IConfirmationTokenService confirmation) : Controller
+public class CabinetController(IStudentCabinetService cabinet, IConfirmationTokenService confirmation, IAdminCabinetService adminCabinet) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -60,11 +60,34 @@ public class CabinetController(IStudentCabinetService cabinet, IConfirmationToke
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public IActionResult Admin()
+    public async Task<IActionResult> Admin()
     {
-        var accountEmail = User.GetEmail() ?? "Администратор";
-        ViewData["AdminEmail"] = accountEmail;
+        var accountsTask = adminCabinet.GetAllStudentAccountsAsync();
+        var profilesTask = adminCabinet.GetAllStudentProfilesAsync();
 
-        return View();
+        await Task.WhenAll(accountsTask, profilesTask);
+
+        var accounts = accountsTask.Result;
+        var profiles = profilesTask.Result;
+
+        var adminStudentViews = new List<AdminCabinetStudentViewModel>();
+
+        foreach (var profile in profiles)
+        {
+            if (accounts.ContainsKey(profile.AccountId))
+            {
+                adminStudentViews.Add(new AdminCabinetStudentViewModel
+                {
+                    FullName = profile.FullName,
+                    GroupName = profile.GroupName,
+                    PhotoUrl = profile.PhotoUrl?.ToString() 
+                });
+            }
+        }
+
+        return View(new AdminCabinetViewModel
+        {
+            Students = adminStudentViews
+        });
     }
 }
