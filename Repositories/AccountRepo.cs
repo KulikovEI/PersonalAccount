@@ -23,4 +23,14 @@ public class AccountRepo(AppDbContext context, IMapper<AccountEntity, AccountMod
         var entity = await Accounts.FindAsync(id);
         return entity == null ? null : mapper.ToModel(entity);
     }
+
+    public async Task<List<AccountModel>> GetByRoleAsync(AccountRole role)
+    {
+        var entities = await Accounts
+            .AsNoTracking()
+            .Where(account => account.Role == role)
+            .ToListAsync();
+
+        return [.. entities.Select(mapper.ToModel)];
+    }
 }

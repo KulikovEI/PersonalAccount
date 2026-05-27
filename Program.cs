@@ -42,6 +42,7 @@ namespace PersonalAccount
             builder.Services.AddScoped<IStudentAuthService, StudentAuthService>();
             builder.Services.AddScoped<IStudentCabinetService, StudentCabinetService>();
             builder.Services.AddScoped<IConfirmationTokenService, ConfirmationTokenService>();
+            builder.Services.AddScoped<IAdminCabinetService, AdminCabinetService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             if (builder.Environment.IsDevelopment())
                 builder.Services.AddScoped<DbSeeder>();

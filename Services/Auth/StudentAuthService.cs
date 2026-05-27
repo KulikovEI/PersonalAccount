@@ -25,6 +25,7 @@ namespace PersonalAccount.Services.Auth
             {
                 new(ClaimTypes.NameIdentifier, account.Id.ToString()),
                 new(ClaimTypes.Email, account.Email),
+                new(ClaimTypes.Role, account.Role.ToString())
             };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
