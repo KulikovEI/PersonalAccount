@@ -11,6 +11,15 @@ public class StudentProfileRepo(AppDbContext context, IMapper<StudentProfileEnti
 {
     private DbSet<StudentProfileEntity> StudentProfiles => context.StudentProfiles;
 
+    public async Task<List<StudentProfileModel>> GetAllAsync()
+    {
+        var entities = await StudentProfiles
+             .AsNoTracking()
+             .ToListAsync();
+
+        return [.. entities.Select(mapper.ToModel)];
+    }
+
     public async Task<StudentProfileModel?> GetByAccountIdAsync(int accountId)
     {
         var entity = await StudentProfiles
