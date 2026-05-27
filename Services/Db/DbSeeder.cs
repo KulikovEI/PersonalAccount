@@ -11,8 +11,7 @@ namespace PersonalAccount.Services.Db;
 public class DbSeeder(
     AppDbContext context,
     IPasswordHasher<AccountModel> hasher,
-    IMapper<AccountEntity, AccountModel> accountMapper,
-    IMapper<StudentProfileEntity, StudentProfileModel> studentProfileMapper)
+    IMapper<AccountEntity, AccountModel> accountMapper)
 {
     public async Task SeedAsync()
     {
@@ -20,29 +19,15 @@ public class DbSeeder(
         var hasStudents = await context.StudentProfiles.AnyAsync();
         if (hasStudents) return;
 
-        var account = new AccountModel
+        var adminModel = new AccountModel
         {
-            Email = "shamraev.alexandr@gmail.com"
+            Email = "eugene020292@gmail.com",
+            Role = AccountRole.Admin 
         };
 
-        var accountEntity = accountMapper.ToEntity(account);
-        accountEntity.PasswordHash = hasher.HashPassword(account, "example");
+        var adminEntity = accountMapper.ToEntity(adminModel);
+        adminEntity.PasswordHash = hasher.HashPassword(adminModel, "admin123");
 
-        await context.Accounts.AddAsync(accountEntity);
-        await context.SaveChangesAsync();
-
-        accountEntity = await context.Accounts.AsNoTracking()
-            .FirstOrDefaultAsync(entity => entity.Email == account.Email) ?? throw new InvalidOperationException();
-
-        var studentProfile = new StudentProfileModel
-        {
-            AccountId = accountEntity.Id,
-            FullName = "John Doe",
-            GroupName = "PD-412",
-            PhotoUrl = "https://masterpiecer-images.s3.yandex.net/5fd531dca6427c7:upscaled".ToUri(),
-        };
-        var studentProfileEntity = studentProfileMapper.ToEntity(studentProfile);
-        await context.StudentProfiles.AddAsync(studentProfileEntity);
-        await context.SaveChangesAsync();
+        await context.Accounts.AddAsync(adminEntity);
     }
 }
