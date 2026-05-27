@@ -29,5 +29,7 @@ public class DbSeeder(
         adminEntity.PasswordHash = hasher.HashPassword(adminModel, "admin123");
 
         await context.Accounts.AddAsync(adminEntity);
+
+        await context.SaveChangesAsync();
     }
 }
