@@ -18,12 +18,15 @@ public class ConfirmationTokenRepo(
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<ConfirmationTokenModel>> GetByAccountIdAsync(int accountId) =>
-        await ConfirmationTokens
+    public async Task<List<ConfirmationTokenModel>> GetByAccountIdAsync(int accountId)
+    {
+        var entities = await ConfirmationTokens
             .AsNoTracking()
-            .Where(entity => entity.AccountId == accountId)
-            .Select(entity => mapper.ToModel(entity))
+            .Where(t => t.AccountId == accountId)
             .ToListAsync();
+
+        return [.. entities.Select(mapper.ToModel)];
+    }
 
     public async Task ConfirmByIdAsync(int id)
     {
