@@ -33,6 +33,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(account => account.PasswordHash)
                 .HasColumnName("password_hash")
                 .IsRequired();
+
+            entity.Property(account => account.Role)
+                .HasColumnName("role")
+                .IsRequired();
         });
 
         builder.Entity<StudentProfileEntity>(entity =>
