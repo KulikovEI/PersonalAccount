@@ -91,4 +91,16 @@ public class CabinetController(IStudentCabinetService cabinet, IConfirmationToke
 
         return View(new AdminCabinetViewModel { Students = adminStudentViews });
     }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmStudentEmail(int id)
+    {
+        if (id <= 0) return RedirectToAction("Error", "Home");
+
+        await adminCabinet.ConfirmStudentEmailAsync(id);
+
+        return RedirectToAction("Admin");
+    }
 }
