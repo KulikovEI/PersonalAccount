@@ -6,5 +6,6 @@ namespace PersonalAccount.Services.Cabinet
     {
         Task<Dictionary<int, AccountModel>> GetAllStudentAccountsAsync();
         Task<List<StudentProfileModel>> GetAllStudentProfilesAsync();
+        Task ConfirmStudentEmailAsync(int id);
     }
 }
