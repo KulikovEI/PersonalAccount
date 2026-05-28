@@ -64,30 +64,31 @@ public class CabinetController(IStudentCabinetService cabinet, IConfirmationToke
     {
         var accountsTask = adminCabinet.GetAllStudentAccountsAsync();
         var profilesTask = adminCabinet.GetAllStudentProfilesAsync();
+        var confirmedIdsTask = confirmation.GetConfirmedAccountIdsAsync();
 
-        await Task.WhenAll(accountsTask, profilesTask);
+        await Task.WhenAll(accountsTask, profilesTask, confirmedIdsTask);
 
         var accounts = accountsTask.Result;
         var profiles = profilesTask.Result;
+        var confirmedIds = confirmedIdsTask.Result;
 
         var adminStudentViews = new List<AdminCabinetStudentViewModel>();
 
         foreach (var profile in profiles)
         {
-            if (accounts.ContainsKey(profile.AccountId))
+            if (accounts.TryGetValue(profile.AccountId, out var account))
             {
                 adminStudentViews.Add(new AdminCabinetStudentViewModel
                 {
+                    AccountId = profile.AccountId, 
                     FullName = profile.FullName,
                     GroupName = profile.GroupName,
-                    PhotoUrl = profile.PhotoUrl?.ToString() 
+                    PhotoUrl = profile.PhotoUrl?.ToString(),
+                    IsEmailConfirmed = confirmedIds.Contains(profile.AccountId) 
                 });
             }
         }
 
-        return View(new AdminCabinetViewModel
-        {
-            Students = adminStudentViews
-        });
+        return View(new AdminCabinetViewModel { Students = adminStudentViews });
     }
 }
