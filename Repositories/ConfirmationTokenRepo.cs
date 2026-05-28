@@ -31,4 +31,16 @@ public class ConfirmationTokenRepo(
        entity.ConfirmedAt = DateTime.UtcNow;
        await context.SaveChangesAsync();
     }
+
+    public async Task<HashSet<int>> GetConfirmedAccountIdsAsync()
+    {
+        var confirmedIds = await ConfirmationTokens
+            .AsNoTracking()
+            .Where(token => token.ConfirmedAt != null)
+            .Select(token => token.AccountId)
+            .Distinct()
+            .ToListAsync();
+
+        return [.. confirmedIds];
+    }
 }
