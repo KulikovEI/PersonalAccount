@@ -49,4 +49,9 @@ public class ConfirmationTokenService(IConfirmationTokenRepo confirmations) : IC
 
     private static string HashToken(string token) =>
         Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
+
+    public async Task<HashSet<int>> GetConfirmedAccountIdsAsync()
+    {
+        return await confirmations.GetConfirmedAccountIdsAsync();
+    }
 }
