@@ -16,8 +16,11 @@ public class DbSeeder(
     public async Task SeedAsync()
     {
         await context.Database.MigrateAsync();
-        var hasStudents = await context.StudentProfiles.AnyAsync();
-        if (hasStudents) return;
+
+        var adminEmail = "eugene020292@gmail.com";
+        var adminExists = await context.Accounts.AnyAsync(a => a.Email == adminEmail);
+
+        if (adminExists) return;
 
         var adminModel = new AccountModel
         {
