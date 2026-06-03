@@ -13,22 +13,20 @@
             var discipline = Model.Disciplines[disciplineId];
             var groups = Model.Groups[disciplineId];
             <div class="w-100 d-flex flex-column align-items-stretch gap-2">
-                <div class="card d-flex align-content-center justify-content-center"
-                     style="height: 50px;">
-                    <header class="text-center ">
-                        <h3>@discipline.Name</h3>
-                    </header>
-                </div>
+                <header class="text-primary fw-bold ">
+                    <h3>@discipline.Name</h3>
+                </header>
                 <div class="container d-flex flex-wrap gap-2">
                     @foreach (var group in groups)
                     {
                         <div class="card d-flex align-content-center justify-content-center text-white" style="
-                            width: 300px;
-                            height: 120px;
+                            width: 150px;
+                            height: 80px;
                             background-image: url(@group.ImageUrl);
-                        background-size: cover;">
+                        background-size: cover;
+                        background-color: #0a53be">
                             <span class="text-center">
-                                <h3>@discipline.Name</h3>
+                                <h3>@group.Name</h3>
                             </span>
                         </div>
                     }

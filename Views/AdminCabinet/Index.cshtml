@@ -4,49 +4,66 @@
     ViewData["Title"] = "Панель администратора";
 }
 
-<div class="container d-flex flex-column">
+<div class="container d-flex flex-column gap-5">
     <header class="mb-3">
         <h1 class="text-start text-uppercase">Панель администратора</h1>
     </header>
 
-    <div class="container d-flex flex-column align-items-stretch gap-5">
-        @foreach (var groupId in Model.GroupIdsOrder)
-        {
-            var group = Model.Groups[groupId];
-            var students = Model.StudentProfiles[groupId];
-            <div class="w-100 d-flex flex-column align-items-stretch gap-2">
-                <div class="card d-flex align-content-center justify-content-center text-white"
-                     style="
-                         height: 100px;
-                         background-image: url(@group.ImageUrl);
-                     background-size: cover;">
-                    <header class="text-center ">
-                        <h3>@group.Name</h3>
-                    </header>
-                    <span class="text-wrap">@group.Description</span>
-                </div>
-                <div class="container d-flex flex-wrap gap-2">
-                    @foreach (var student in students)
-                    {
-                        <div class="card d-grid" style="grid-template-columns: repeat(2, 1fr); width: 400px">
-                            <div class="w-100 h-100 "
-                                 style="
-                                     background-image: url(@student.PhotoUrl);
-                                 background-size: cover;">
-                            </div>
-                            <div class="d-flex flex-column align-items-stretch justify-content-center">
-                                <span class="mb-1 text-primary">@student.Email</span>
-                                <span class="mb-1">@student.FullName</span>
-                            </div>
+    <div class="container d-flex justify-content-between align-items-start gap-3">
+        <div class="d-flex flex-column align-items-stretch gap-2 flex-fill">
+            <header class="text-primary">
+                <h2>Студенты</h2>
+            </header>
+            <div class="d-flex flex-wrap align-items-start gap-5">
+                @foreach (var student in Model.Students)
+                {
+                    <div class="card" style="width: 200px">
+                        @if (student.PhotoUrl != null)
+                        {
+                            <img class="card-img-top" src="@student.PhotoUrl" alt="Фото студента @student.FullName"/>
+                        }
+                        <div class="card-body d-flex flex-column align-items-stretch justify-content-center gap-1">
+                            <span class="text-primary">@student.Email</span>
+                            <span>@student.FullName</span>
+                            <span class="fw-bold">@student.GroupName</span>
                         </div>
-                    }
-                </div>
+                    </div>
+                }
             </div>
-        }
+        </div>
 
-        <form class="card" method="get" asp-action="AddStudent" style="width: 400px">
-            <button class="btn btn-outline-primary w-100 h-100">Добавить</button>
+        <form method="get" asp-action="AddStudent">
+            <button class="btn btn-outline-primary w-100 h-100">Зарегистрировать нового студента</button>
+        </form>
+    </div>
+    <div class="container d-flex justify-content-between align-items-start gap-3">
+        <div class="d-flex flex-column align-items-stretch gap-2 flex-fill">
+            <header class="text-primary">
+                <h2>Преподаватели</h2>
+            </header>
+            <div class="container d-flex flex-wrap align-items-stretch gap-5">
+                @foreach (var teacher in Model.Teachers)
+                {
+                    <div class="card" style="width: 200px">
+                        @if (teacher.PhotoUrl != null)
+                        {
+                            <img class="card-img-top" src="@teacher.PhotoUrl" alt="Фото студента @teacher.FullName"/>
+                        }
+                        <div class="card-body d-flex flex-column align-items-stretch justify-content-center gap-1">
+                            <span class="text-primary">@teacher.Email</span>
+                            <span>@teacher.FullName</span>
+                        </div>
+                        <form class="card-footer" method="get" asp-action="EditTeacher">
+                            <input type="hidden" name="teacherAccountId" value="@teacher.AccountId"/>
+                            <button class="btn btn-outline-secondary">Редактировать</button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <form method="get" asp-action="AddTeacher">
+            <button class="btn btn-outline-primary w-100 h-100">Зарегистрировать нового преподавателя</button>
         </form>
     </div>
 </div>
-

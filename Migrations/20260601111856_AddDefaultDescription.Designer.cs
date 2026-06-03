@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PersonalAccount.Data;
 
@@ -10,9 +11,11 @@ using PersonalAccount.Data;
 namespace PersonalAccount.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260601111856_AddDefaultDescription")]
+    partial class AddDefaultDescription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.8");
@@ -36,9 +39,7 @@ namespace PersonalAccount.Migrations
                         .HasColumnName("password_hash");
 
                     b.Property<int>("Role")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasDefaultValue(4)
                         .HasColumnName("role");
 
                     b.HasKey("Id");

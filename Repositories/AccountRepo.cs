@@ -14,5 +14,17 @@ public class AccountRepo(AppDbContext context, IMapper<AccountEntity, AccountMod
         await GetByAsync(entity => entity.Email == email);
 
     public async Task<List<AccountModel>> GetAllByRoleAsync(AccountRoles role) =>
-        await GetAllByAsync(entity => entity.Role == role);
+        await GetAllByAsync(entity => (entity.Role & role) != 0);
 }
+
+// 01101010
+// 11011110
+// 01001010
+
+// 001 Admin
+// 101 Admin | Student
+// 001 != 0
+
+// 001 Admin
+// 110 Teacher | Student
+// 000 == 0

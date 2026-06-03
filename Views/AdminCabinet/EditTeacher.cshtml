@@ -1,0 +1,57 @@
+﻿@model EditTeacherViewModel
+@{
+    ViewData["Title"] = "Редактирование преподавателя";
+}
+
+<div class="container d-flex flex-column">
+    <header class="mb-3">
+        <h1 class="text-start text-uppercase">Панель администратора</h1>
+    </header>
+    <div class="container d-flex flex-column align-items-stretch gap-5">
+        @foreach (var disciplineId in Model.DisciplineIdsOrder)
+        {
+            var discipline = Model.Disciplines[disciplineId];
+            var groups = Model.Groups[disciplineId];
+            <div class="w-100 d-flex flex-column align-items-stretch gap-2">
+                <header class="text-primary fw-bold ">
+                    <h3>@discipline.Name</h3>
+                </header>
+                <div class="container d-flex flex-wrap gap-2">
+                    @foreach (var group in groups)
+                    {
+                        <div class="card d-flex align-content-center justify-content-center text-white" style="
+                            width: 150px;
+                            height: 40px;
+                            background-image: url(@group.ImageUrl);
+                        background-size: cover;
+                        background-color: #0a53be">
+                            <span class="text-center">
+                               @group.Name
+                            </span>
+                        </div>
+                    }
+                    @{
+                        var groupOptions = Model.AllGroups.Where(group => groups.All(g => group.Id != g.Id)).ToArray();
+                        if (groupOptions.Any())
+                        {
+                            <form class="d-flex gap-2" method="post">
+                                <input type="hidden" name="teacherAccountId" value="@Model.TeacherAccountId"/>
+                                <input type="hidden" name="disciplineId" value="@discipline.Id"/>
+                                <select class="form-control" name="groupId" style=" width: 150px; height: 40px;">
+                                    @foreach (var group in groupOptions)
+                                    {
+                                        <option value="@group.Id">@group.Name</option>
+                                    }
+                                </select>
+                                <button class="btn btn-primary"
+                                        style=" width: 150px; height: 40px;">Добавить
+                                </button>
+                            </form>
+                        }
+                    }
+
+                </div>
+            </div>
+        }
+    </div>
+</div>

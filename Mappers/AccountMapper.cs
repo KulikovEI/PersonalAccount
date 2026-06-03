@@ -17,7 +17,6 @@ public class AccountMapper : Mapper<AccountEntity, AccountModel>
     public override AccountModel ToModel(AccountEntity entity)
     {
         var model = base.ToModel(entity);
-        model.Id = entity.Id;
         model.Role = entity.Role;
         model.Email = entity.Email;
         model.PasswordHash = entity.PasswordHash;

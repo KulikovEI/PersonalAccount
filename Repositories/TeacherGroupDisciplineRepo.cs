@@ -14,10 +14,4 @@ public class TeacherGroupDisciplineRepo(
 {
     public async Task<List<TeacherGroupDisciplineModel>> GetAllByTeacherAccountIdAsync(int teacherAccountId) =>
         await GetAllByAsync(entity => entity.TeacherAccountId == teacherAccountId);
-
-    public async Task<List<TeacherGroupDisciplineModel>> GetAllByTeacherAccountIdAndDisciplineIdAsync(
-        int teacherAccountId,
-        int disciplineId
-    ) => await GetAllByAsync(entity => entity.TeacherAccountId == teacherAccountId &&
-                                       entity.DisciplineId == disciplineId);
 }
