@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalAccount.Constants;
+using PersonalAccount.Models;
 using PersonalAccount.Services.Account;
 using PersonalAccount.Services.Cabinet;
 using PersonalAccount.Services.Email;
@@ -159,5 +160,29 @@ public class AdminCabinetController(
     {
         await adminCabinetService.AddTeacherGroupDisciplineAsync(teacherAccountId, groupId, disciplineId);
         return RedirectToAction("EditTeacher", new { teacherAccountId });
+    }
+
+    [HttpGet]
+    public IActionResult AddGroup()
+    {
+        return View(new AddGroupViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddGroup(AddGroupViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+       
+        try
+        {
+            await adminCabinetService.AddGroupAsync(model.Name, model.Description, model.ImageUrl);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
     }
 }
