@@ -43,6 +43,8 @@ public class AdminCabinetController(
                     }).ToList(),
             Students = studentProfiles.Select(studentProfile => new AdminCabinetStudentViewModel
                 {
+                    AccountId = studentProfile.AccountId,
+                    GroupId = studentProfile.GroupId,
                     FullName = studentProfile.FullName,
                     Email = accountsDictionary[studentProfile.AccountId].Email,
                     GroupName = groupsDictionary[studentProfile.GroupId].Name,
