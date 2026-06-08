@@ -4,6 +4,8 @@ namespace PersonalAccount.ViewModels;
 
 public class AdminCabinetStudentViewModel : ViewModel
 {
+    public int AccountId { get; set; }    
+    public int GroupId { get; set; }     
     public string Email { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string GroupName { get; set; } = string.Empty;
