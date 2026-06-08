@@ -49,6 +49,7 @@ public class AdminCabinetController(
                 }).OrderBy(student => student.GroupName)
                 .ThenBy(student => student.FullName)
                 .ToList(),
+            Groups = groups.OrderBy(g => g.Name).ToList()
         });
     }
 
