@@ -27,6 +27,7 @@ public class AdminCabinetController(
         var teacherProfiles = await adminCabinetService.GetAllTeacherProfilesAsync();
         var groups = await adminCabinetService.GetAllGroupsAsync();
         var groupsDictionary = groups.ToDictionary(group => group.Id);
+        var disciplines = await adminCabinetService.GetAllDisciplinesAsync();
 
         return View(new AdminCabinetViewModel
         {
@@ -49,7 +50,8 @@ public class AdminCabinetController(
                 }).OrderBy(student => student.GroupName)
                 .ThenBy(student => student.FullName)
                 .ToList(),
-            Groups = groups.OrderBy(g => g.Name).ToList()
+            Groups = groups.OrderBy(g => g.Name).ToList(),
+            Disciplines = disciplines.OrderBy(d => d.Name).ToList()
         });
     }
 
