@@ -10,6 +10,7 @@ public class AdminCabinetService(
     IGroupRepo groupRepo,
     IStudentProfileRepo studentProfileRepo,
     ITeacherProfileRepo teacherProfileRepo,
+    IDisciplineRepo disciplineRepo,
     ITeacherGroupDisciplineRepo teacherGroupDisciplineRepo
 ) : IAdminCabinetService
 {
@@ -51,7 +52,7 @@ public class AdminCabinetService(
         });
     }
 
-    public  async Task AddGroupAsync(string name, string description, string? imageUrl)
+    public async Task AddGroupAsync(string name, string description, string? imageUrl)
     {
         var allGroups = await groupRepo.GetAllAsync();
         if (allGroups.Any(g => g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
@@ -63,9 +64,27 @@ public class AdminCabinetService(
         {
             Name = name.Trim(),
             Description = description.Trim(),
-            ImageUrl = imageUrl?.ToUri() 
+            ImageUrl = imageUrl?.ToUri()
         };
 
         await groupRepo.AddAsync(newGroup);
+    }
+
+    public async Task<List<DisciplineModel>> GetAllDisciplinesAsync() => await disciplineRepo.GetAllAsync();
+
+    public async Task AddDisciplineAsync(string name)
+    {
+        var allDisciplines = await disciplineRepo.GetAllAsync();
+        if (allDisciplines.Any(d => d.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new InvalidOperationException($"Дисциплина «{name}» уже существует в системе.");
+        }
+
+        var newDiscipline = new DisciplineModel
+        {
+            Name = name.Trim()
+        };
+
+        await disciplineRepo.AddAsync(newDiscipline);
     }
 }
