@@ -23,4 +23,5 @@ public class AdminCabinetViewModel : ViewModel
     public List<AdminCabinetTeacherViewModel> Teachers { get; set; } = [];
     public List<AdminCabinetStudentViewModel> Students { get; set; } = [];
     public List<GroupModel> Groups { get; set; } = [];
+    public List<DisciplineModel> Disciplines { get; set; } = [];
 }
