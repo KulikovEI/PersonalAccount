@@ -87,4 +87,17 @@ public class AdminCabinetService(
 
         await disciplineRepo.AddAsync(newDiscipline);
     }
+
+    public async Task ChangeStudentGroupAsync(int studentAccountId, int groupId)
+    {
+        if (groupId != -1) 
+        {
+            var targetGroup = await groupRepo.GetByIdAsync(groupId);
+            if (targetGroup == null)
+            {
+                throw new InvalidOperationException("Выбранная учебная группа не существует в системе.");
+            }
+        }
+        await studentProfileRepo.UpdateGroupByAccountIdAsync(studentAccountId, groupId);
+    }
 }

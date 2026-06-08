@@ -14,4 +14,5 @@ public interface IAdminCabinetService
     Task AddGroupAsync(string name, string description, string? imageUrl);
     Task<List<DisciplineModel>> GetAllDisciplinesAsync();
     Task AddDisciplineAsync(string name);
+    Task ChangeStudentGroupAsync(int studentAccountId, int groupId);
 }
