@@ -11,4 +11,5 @@ public interface IAdminCabinetService
     Task AddStudentProfileAsync(string email, string fullName);
     Task AddTeacherProfileAsync(string email, string fullName);
     Task AddTeacherGroupDisciplineAsync(int teacherAccountId, int groupId, int disciplineId);
+    Task AddGroupAsync(string name, string description, string? imageUrl);
 }

@@ -1,6 +1,7 @@
 ﻿using PersonalAccount.Models;
 using PersonalAccount.Repositories;
 using PersonalAccount.Types;
+using PersonalAccount.Utils;
 
 namespace PersonalAccount.Services.Cabinet;
 
@@ -48,5 +49,23 @@ public class AdminCabinetService(
             FullName = fullName,
             AccountId = account.Id
         });
+    }
+
+    public  async Task AddGroupAsync(string name, string description, string? imageUrl)
+    {
+        var allGroups = await groupRepo.GetAllAsync();
+        if (allGroups.Any(g => g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new InvalidOperationException($"Группа с названием «{name}» уже существует в системе.");
+        }
+
+        var newGroup = new GroupModel
+        {
+            Name = name.Trim(),
+            Description = description.Trim(),
+            ImageUrl = imageUrl?.ToUri() 
+        };
+
+        await groupRepo.AddAsync(newGroup);
     }
 }
