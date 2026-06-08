@@ -102,4 +102,31 @@
             <button class="btn btn-outline-primary w-100 h-100">Создать новую учебную группу</button>
         </form>
     </div>
+
+    <div class="container d-flex justify-content-between align-items-start gap-3 px-0">
+        <div class="d-flex flex-column align-items-stretch gap-2 flex-fill">
+            <header class="text-primary">
+                <h2>Дисциплины</h2>
+            </header>
+            <div class="container d-flex flex-wrap align-items-stretch gap-3 px-0">
+                @if (Model.Disciplines == null || !Model.Disciplines.Any())
+                {
+                    <span class="text-muted italic">В системе пока нет созданных дисциплин.</span>
+                }
+                else
+                {
+                    @foreach (var discipline in Model.Disciplines)
+                    {
+                        <div class="card d-flex justify-content-center align-items-center bg-light shadow-sm" style="width: 200px; height: 80px;">
+                            <span class="fw-bold text-dark text-center px-2">@discipline.Name</span>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <form method="get" asp-action="AddDiscipline">
+            <button class="btn btn-outline-primary w-100 h-100">Создать новую дисциплину</button>
+        </form>
+    </div>
 </div>
