@@ -188,4 +188,28 @@ public class AdminCabinetController(
             return View(model);
         }
     }
+
+    [HttpGet]
+    public IActionResult AddDiscipline()
+    {
+        return View(new AddDisciplineViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddDiscipline(AddDisciplineViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        try
+        {
+            await adminCabinetService.AddDisciplineAsync(model.Name);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
+    }
 }
