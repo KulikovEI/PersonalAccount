@@ -214,4 +214,25 @@ public class AdminCabinetController(
             return View(model);
         }
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangeStudentGroup(int studentAccountId, int groupId)
+    {
+        if (studentAccountId <= 0)
+        {
+            return BadRequest("Некорректный идентификатор аккаунта студента.");
+        }
+
+        try
+        {
+            await adminCabinetService.ChangeStudentGroupAsync(studentAccountId, groupId);
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Не удалось изменить группу: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 }
