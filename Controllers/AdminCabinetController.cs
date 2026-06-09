@@ -235,4 +235,46 @@ public class AdminCabinetController(
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteGroup(int groupId)
+    {
+        if (groupId == GroupConstants.NoGroupId)
+        {
+            TempData["ErrorMessage"] = "Нельзя удалить системную группу.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        try
+        {
+            await adminCabinetService.DeleteGroupAsync(groupId);
+            TempData["SuccessMessage"] = "Группа успешно удалена. Связанные студенты переведены в статус 'Без группы'.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Ошибка при удалении группы: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteDiscipline(int disciplineId)
+    {
+        try
+        {
+            await adminCabinetService.DeleteDisciplineAsync(disciplineId);
+            TempData["SuccessMessage"] = "Дисциплина успешно удалена.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Ошибка при удалении дисциплины: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
 }
