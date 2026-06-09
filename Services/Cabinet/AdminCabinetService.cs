@@ -131,4 +131,42 @@ public class AdminCabinetService(
         }
         await disciplineRepo.DeleteByIdAsync(disciplineId);
     }
+
+    public async Task DeleteStudentAsync(int studentAccountId)
+    {
+        var account = await accountRepo.GetByIdAsync(studentAccountId);
+        if (account == null)
+        {
+            throw new KeyNotFoundException("Аккаунт студента не найден.");
+        }
+
+        var allProfiles = await studentProfileRepo.GetAllAsync();
+        var profile = allProfiles.FirstOrDefault(p => p.AccountId == studentAccountId);
+
+        if (profile != null)
+        {
+            await studentProfileRepo.DeleteByIdAsync(profile.Id);
+        }
+
+        await accountRepo.DeleteByIdAsync(studentAccountId);
+    }
+
+    public async Task DeleteTeacherAsync(int teacherAccountId)
+    {
+        var account = await accountRepo.GetByIdAsync(teacherAccountId);
+        if (account == null)
+        {
+            throw new KeyNotFoundException("Аккаунт преподавателя не найден.");
+        }
+
+        var allProfiles = await teacherProfileRepo.GetAllAsync();
+        var profile = allProfiles.FirstOrDefault(p => p.AccountId == teacherAccountId);
+
+        if (profile != null)
+        {
+            await teacherProfileRepo.DeleteByIdAsync(profile.Id);
+        }
+
+        await accountRepo.DeleteByIdAsync(teacherAccountId);
+    }
 }
