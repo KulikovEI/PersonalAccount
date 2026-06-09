@@ -276,5 +276,41 @@ public class AdminCabinetController(
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteStudent(int studentAccountId)
+    {
+        if (studentAccountId <= 0) return BadRequest("Некорректный ID студента.");
 
+        try
+        {
+            await adminCabinetService.DeleteStudentAsync(studentAccountId);
+            TempData["SuccessMessage"] = "Студент и его учетная запись успешно удалены.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Не удалось удалить студента: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteTeacher(int teacherAccountId)
+    {
+        if (teacherAccountId <= 0) return BadRequest("Некорректный ID преподавателя.");
+
+        try
+        {
+            await adminCabinetService.DeleteTeacherAsync(teacherAccountId);
+            TempData["SuccessMessage"] = "Преподаватель успешно удален и снят со всех дисциплин.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Не удалось удалить преподавателя: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 }
