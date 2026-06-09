@@ -70,6 +70,15 @@
                                     Применить
                                 </button>
                             </form>
+                           
+                            <form method="post" asp-action="DeleteStudent" class="mt-1">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="studentAccountId" value="@student.AccountId" />
+                                <button class="btn btn-outline-danger btn-sm w-100" type="submit"
+                                        onclick="return confirm('Вы действительно хотите БЕЗВОЗВРАТНО удалить студента @student.FullName и всю его историю входа?');">
+                                    Удалить аккаунт
+                                </button>
+                            </form>
                         </div>
                     </div>
                 }
@@ -100,6 +109,15 @@
                         <form class="card-footer" method="get" asp-action="EditTeacher">
                             <input type="hidden" name="teacherAccountId" value="@teacher.AccountId"/>
                             <button class="btn btn-outline-secondary">Редактировать</button>
+                        </form>
+
+                        <form method="post" asp-action="DeleteTeacher" class="w-100">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="teacherAccountId" value="@teacher.AccountId" />
+                            <button class="btn btn-outline-danger btn-sm w-100" type="submit"
+                                    onclick="return confirm('Вы уверены, что хотите удалить преподавателя @teacher.FullName? Это снимет его со всех дисциплин и удалит аккаунт.');">
+                                Удалить
+                            </button>
                         </form>
                     </div>
                 }
