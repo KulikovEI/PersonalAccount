@@ -1,4 +1,5 @@
-﻿@model AdminCabinetViewModel
+﻿@using PersonalAccount.Constants
+@model AdminCabinetViewModel
 
 @{
     ViewData["Title"] = "Панель администратора";
@@ -8,6 +9,21 @@
     <header class="mb-3">
         <h1 class="text-start text-uppercase">Панель администратора</h1>
     </header>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     <div class="container d-flex justify-content-between align-items-start gap-3">
         <div class="d-flex flex-column align-items-stretch gap-2 flex-fill">
@@ -20,12 +36,49 @@
                     <div class="card" style="width: 200px">
                         @if (student.PhotoUrl != null)
                         {
-                            <img class="card-img-top" src="@student.PhotoUrl" alt="Фото студента @student.FullName"/>
+                            <img class="card-img-top" src="@student.PhotoUrl" alt="Фото студента @student.FullName" />
                         }
                         <div class="card-body d-flex flex-column align-items-stretch justify-content-center gap-1">
-                            <span class="text-primary">@student.Email</span>
+                            <span class="text-primary small text-truncate" title="@student.Email">@student.Email</span>
                             <span>@student.FullName</span>
-                            <span class="fw-bold">@student.GroupName</span>
+
+                            <span class="fw-bold text-muted small">Текущая: @student.GroupName</span>
+
+                            <form method="post" asp-action="ChangeStudentGroup" class="mt-2 pt-2 border-top">
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden" name="studentAccountId" value="@student.AccountId" />
+
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted mb-1">Перевести в:</label>
+                                    <select name="groupId" class="form-select form-select-sm">
+                                        @foreach (var group in Model.Groups)
+                                        {
+                                            if (group.Id == student.GroupId)
+                                            {
+                                                <option value="@group.Id" selected="selected">@group.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@group.Id">@group.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+
+                                <button class="btn btn-primary btn-sm w-100" type="submit">
+                                    Применить
+                                </button>
+                            </form>
+                           
+                            <form method="post" asp-action="DeleteStudent" class="mt-1">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="studentAccountId" value="@student.AccountId" />
+                                <button class="btn btn-outline-danger btn-sm w-100" type="submit"
+                                        onclick="return confirm('Вы действительно хотите БЕЗВОЗВРАТНО удалить студента @student.FullName и всю его историю входа?');">
+                                    Удалить аккаунт
+                                </button>
+                            </form>
                         </div>
                     </div>
                 }
@@ -57,6 +110,15 @@
                             <input type="hidden" name="teacherAccountId" value="@teacher.AccountId"/>
                             <button class="btn btn-outline-secondary">Редактировать</button>
                         </form>
+
+                        <form method="post" asp-action="DeleteTeacher" class="w-100">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="teacherAccountId" value="@teacher.AccountId" />
+                            <button class="btn btn-outline-danger btn-sm w-100" type="submit"
+                                    onclick="return confirm('Вы уверены, что хотите удалить преподавателя @teacher.FullName? Это снимет его со всех дисциплин и удалит аккаунт.');">
+                                Удалить
+                            </button>
+                        </form>
                     </div>
                 }
             </div>
@@ -64,6 +126,94 @@
 
         <form method="get" asp-action="AddTeacher">
             <button class="btn btn-outline-primary w-100 h-100">Зарегистрировать нового преподавателя</button>
+        </form>
+    </div>
+
+    <div class="container d-flex justify-content-between align-items-start gap-3 px-0">
+        <div class="d-flex flex-column align-items-stretch gap-2 flex-fill">
+            <header class="text-primary">
+                <h2>Учебные группы</h2>
+            </header>
+            <div class="container d-flex flex-wrap align-items-stretch gap-5 px-0">
+                @if (Model.Groups == null || !Model.Groups.Any())
+                {
+                    <span class="text-muted italic">В системе пока нет созданных групп.</span>
+                }
+                else
+                {
+                    @foreach (var group in Model.Groups)
+                    {
+                        <div class="card" style="width: 200px">
+                            @if (group.ImageUrl != null)
+                            {
+                                <img class="card-img-top" src="@group.ImageUrl" alt="Обложка группы @group.Name" style="height: 120px; object-fit: cover;" />
+                            }
+                            <div class="card-body d-flex flex-column align-items-stretch justify-content-start gap-1">
+                                <span class="fw-bold text-primary fs-5">@group.Name</span>
+                                <small class="text-muted lh-sm text-truncate-2" title="@group.Description">
+                                    @group.Description
+                                </small>
+                            </div>
+                        </div>
+                        <div class="p-3 pt-0">
+                                @if (group.Id != GroupConstants.NoGroupId)
+                                {
+                                    <form method="post" asp-action="DeleteGroup" class="w-100">
+                                        <input type="hidden" name="groupId" value="@group.Id" />
+                                        <button class="btn btn-outline-danger btn-sm w-100" type="submit"
+                                                onclick="return confirm('Вы уверены, что хотите удалить группу @group.Name? Все студенты этой группы будут переведены в статус \'Без группы\'.');">
+                                            Удалить группу
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary w-100 d-block text-center py-1">Системная группа</span>
+                                }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <form method="get" asp-action="AddGroup">
+            <button class="btn btn-outline-primary w-100 h-100">Создать новую учебную группу</button>
+        </form>
+    </div>
+
+    <div class="container d-flex justify-content-between align-items-start gap-3 px-0">
+        <div class="d-flex flex-column align-items-stretch gap-2 flex-fill">
+            <header class="text-primary">
+                <h2>Дисциплины</h2>
+            </header>
+            <div class="container d-flex flex-wrap align-items-stretch gap-3 px-0">
+                @if (Model.Disciplines == null || !Model.Disciplines.Any())
+                {
+                    <span class="text-muted italic">В системе пока нет созданных дисциплин.</span>
+                }
+                else
+                {
+                    @foreach (var discipline in Model.Disciplines)
+                    {
+                        <div class="card d-flex justify-content-center align-items-center bg-light shadow-sm" style="width: 200px; height: 80px;">
+                            <span class="fw-bold text-dark text-center px-2">@discipline.Name</span>
+                        </div>
+                        <div class="p-3 pt-0">
+                        <form method="post" asp-action="DeleteDiscipline" class="w-100">
+                            <input type="hidden" name="disciplineId" value="@discipline.Id" />
+                            <button class="btn btn-sm btn-outline-danger w-100 py-0" type="submit" style="font-size: 0.75rem;"
+                                    onclick="return confirm('Удалить дисциплину &quot;@discipline.Name&quot;? Она сотрется из связок со всеми группами и преподавателями.');">
+                                Удалить
+                            </button>
+                        </form>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <form method="get" asp-action="AddDiscipline">
+            <button class="btn btn-outline-primary w-100 h-100">Создать новую дисциплину</button>
         </form>
     </div>
 </div>

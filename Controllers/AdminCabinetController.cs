@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalAccount.Constants;
+using PersonalAccount.Models;
 using PersonalAccount.Services.Account;
 using PersonalAccount.Services.Cabinet;
 using PersonalAccount.Services.Email;
@@ -26,6 +27,7 @@ public class AdminCabinetController(
         var teacherProfiles = await adminCabinetService.GetAllTeacherProfilesAsync();
         var groups = await adminCabinetService.GetAllGroupsAsync();
         var groupsDictionary = groups.ToDictionary(group => group.Id);
+        var disciplines = await adminCabinetService.GetAllDisciplinesAsync();
 
         return View(new AdminCabinetViewModel
         {
@@ -41,6 +43,8 @@ public class AdminCabinetController(
                     }).ToList(),
             Students = studentProfiles.Select(studentProfile => new AdminCabinetStudentViewModel
                 {
+                    AccountId = studentProfile.AccountId,
+                    GroupId = studentProfile.GroupId,
                     FullName = studentProfile.FullName,
                     Email = accountsDictionary[studentProfile.AccountId].Email,
                     GroupName = groupsDictionary[studentProfile.GroupId].Name,
@@ -48,6 +52,8 @@ public class AdminCabinetController(
                 }).OrderBy(student => student.GroupName)
                 .ThenBy(student => student.FullName)
                 .ToList(),
+            Groups = groups.OrderBy(g => g.Name).ToList(),
+            Disciplines = disciplines.OrderBy(d => d.Name).ToList()
         });
     }
 
@@ -159,5 +165,152 @@ public class AdminCabinetController(
     {
         await adminCabinetService.AddTeacherGroupDisciplineAsync(teacherAccountId, groupId, disciplineId);
         return RedirectToAction("EditTeacher", new { teacherAccountId });
+    }
+
+    [HttpGet]
+    public IActionResult AddGroup()
+    {
+        return View(new AddGroupViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddGroup(AddGroupViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+       
+        try
+        {
+            await adminCabinetService.AddGroupAsync(model.Name, model.Description, model.ImageUrl);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
+    }
+
+    [HttpGet]
+    public IActionResult AddDiscipline()
+    {
+        return View(new AddDisciplineViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddDiscipline(AddDisciplineViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        try
+        {
+            await adminCabinetService.AddDisciplineAsync(model.Name);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangeStudentGroup(int studentAccountId, int groupId)
+    {
+        if (studentAccountId <= 0)
+        {
+            return BadRequest("Некорректный идентификатор аккаунта студента.");
+        }
+
+        try
+        {
+            await adminCabinetService.ChangeStudentGroupAsync(studentAccountId, groupId);
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Не удалось изменить группу: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteGroup(int groupId)
+    {
+        if (groupId == GroupConstants.NoGroupId)
+        {
+            TempData["ErrorMessage"] = "Нельзя удалить системную группу.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        try
+        {
+            await adminCabinetService.DeleteGroupAsync(groupId);
+            TempData["SuccessMessage"] = "Группа успешно удалена. Связанные студенты переведены в статус 'Без группы'.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Ошибка при удалении группы: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteDiscipline(int disciplineId)
+    {
+        try
+        {
+            await adminCabinetService.DeleteDisciplineAsync(disciplineId);
+            TempData["SuccessMessage"] = "Дисциплина успешно удалена.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Ошибка при удалении дисциплины: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteStudent(int studentAccountId)
+    {
+        if (studentAccountId <= 0) return BadRequest("Некорректный ID студента.");
+
+        try
+        {
+            await adminCabinetService.DeleteStudentAsync(studentAccountId);
+            TempData["SuccessMessage"] = "Студент и его учетная запись успешно удалены.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Не удалось удалить студента: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteTeacher(int teacherAccountId)
+    {
+        if (teacherAccountId <= 0) return BadRequest("Некорректный ID преподавателя.");
+
+        try
+        {
+            await adminCabinetService.DeleteTeacherAsync(teacherAccountId);
+            TempData["SuccessMessage"] = "Преподаватель успешно удален и снят со всех дисциплин.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Не удалось удалить преподавателя: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 }
