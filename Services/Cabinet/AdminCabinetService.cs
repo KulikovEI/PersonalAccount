@@ -1,4 +1,5 @@
-﻿using PersonalAccount.Models;
+﻿using PersonalAccount.Constants;
+using PersonalAccount.Models;
 using PersonalAccount.Repositories;
 using PersonalAccount.Types;
 using PersonalAccount.Utils;
@@ -99,5 +100,35 @@ public class AdminCabinetService(
             }
         }
         await studentProfileRepo.UpdateGroupByAccountIdAsync(studentAccountId, groupId);
+    }
+
+    public async Task DeleteGroupAsync(int groupId)
+    {
+        if (groupId == GroupConstants.NoGroupId)
+        {
+            throw new InvalidOperationException("Запрещено удалять системную группу 'Без группы'.");
+        }
+        var group = await groupRepo.GetByIdAsync(groupId);
+        if (group == null)
+        {
+            throw new KeyNotFoundException("Указанная учебная группа не найдена.");
+        }
+        var allStudents = await studentProfileRepo.GetAllAsync();
+        var studentsInGroup = allStudents.Where(s => s.GroupId == groupId);
+        foreach (var student in studentsInGroup)
+        {
+            await studentProfileRepo.UpdateGroupByAccountIdAsync(student.AccountId, GroupConstants.NoGroupId);
+        }
+        await groupRepo.DeleteByIdAsync(groupId);
+    }
+
+    public async Task DeleteDisciplineAsync(int disciplineId)
+    {
+        var discipline = await disciplineRepo.GetByIdAsync(disciplineId);
+        if (discipline == null)
+        {
+            throw new KeyNotFoundException("Указанная дисциплина не найдена.");
+        }
+        await disciplineRepo.DeleteByIdAsync(disciplineId);
     }
 }
