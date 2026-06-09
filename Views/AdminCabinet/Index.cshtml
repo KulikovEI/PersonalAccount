@@ -1,4 +1,5 @@
-﻿@model AdminCabinetViewModel
+﻿@using PersonalAccount.Constants
+@model AdminCabinetViewModel
 
 @{
     ViewData["Title"] = "Панель администратора";
@@ -8,6 +9,21 @@
     <header class="mb-3">
         <h1 class="text-start text-uppercase">Панель администратора</h1>
     </header>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     <div class="container d-flex justify-content-between align-items-start gap-3">
         <div class="d-flex flex-column align-items-stretch gap-2 flex-fill">
@@ -121,6 +137,22 @@
                                 </small>
                             </div>
                         </div>
+                        <div class="p-3 pt-0">
+                                @if (group.Id != GroupConstants.NoGroupId)
+                                {
+                                    <form method="post" asp-action="DeleteGroup" class="w-100">
+                                        <input type="hidden" name="groupId" value="@group.Id" />
+                                        <button class="btn btn-outline-danger btn-sm w-100" type="submit"
+                                                onclick="return confirm('Вы уверены, что хотите удалить группу @group.Name? Все студенты этой группы будут переведены в статус \'Без группы\'.');">
+                                            Удалить группу
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary w-100 d-block text-center py-1">Системная группа</span>
+                                }
+                        </div>
                     }
                 }
             </div>
@@ -147,6 +179,15 @@
                     {
                         <div class="card d-flex justify-content-center align-items-center bg-light shadow-sm" style="width: 200px; height: 80px;">
                             <span class="fw-bold text-dark text-center px-2">@discipline.Name</span>
+                        </div>
+                        <div class="p-3 pt-0">
+                        <form method="post" asp-action="DeleteDiscipline" class="w-100">
+                            <input type="hidden" name="disciplineId" value="@discipline.Id" />
+                            <button class="btn btn-sm btn-outline-danger w-100 py-0" type="submit" style="font-size: 0.75rem;"
+                                    onclick="return confirm('Удалить дисциплину &quot;@discipline.Name&quot;? Она сотрется из связок со всеми группами и преподавателями.');">
+                                Удалить
+                            </button>
+                        </form>
                         </div>
                     }
                 }
